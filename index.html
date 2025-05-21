@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delícias da Palha - Planejamento Estratégico Interativo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <link rel="icon" href="./img/favicon-32x32.png">
+    <meta property="og:type" content="website"/>
+        <meta property="og:title" content="Delícias da Palha - Planejamento Estratégico Interativo"/>
+        <meta property="og:image" content=""/>
+        <meta property="og:description" content="Disciplina: Planejamento Estratégico em Recursos Humanos"/>
+        <meta property="og:site_name" content="Delícias da Palha"/>
+    <!-- Visualization & Content Choices:
+        - Company Intro: Text (HTML) -> Goal: Inform -> Justification: Basic context.
+        - Mission/Vision/Values: Styled lists/cards (HTML/Tailwind) -> Goal: Inform -> Justification: Clear presentation of core principles.
+        - PDCA: Tabs (HTML/JS) -> Goal: Organize/Inform -> Interaction: Click to reveal P/D/C/A -> Justification: Structured exploration of the cycle.
+        - Brainstorming: List (HTML) -> Goal: Inform -> Justification: Simple display of ideas.
+        - GUT Matrix: Table (HTML) & Bar Chart (Chart.js) -> Goal: Compare/Inform -> Interaction: Visual score comparison -> Justification: Table for data, chart for quick visual prioritization. Library: Chart.js.
+        - Cause & Effect: Expandable hierarchical list (HTML/Tailwind/JS) -> Goal: Organize/Relationships -> Interaction: Click to expand/collapse categories -> Justification: Simulates fishbone structure without SVG, focusing on cause-category relationships.
+        - 5W2H: Table (HTML) -> Goal: Inform/Organize -> Justification: Clear plan presentation.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .bg-beige { background-color: #f5f5dc; }
+        .bg-cream { background-color: #fffdd0; }
+        .text-brown-dark { color: #5d4037; }
+        .text-brown-medium { color: #795548; }
+        .border-brown-light { border-color: #a1887f; }
+        .accent-gold { color: #b8860b; }
+        .bg-accent-gold-light { background-color: #fff8dc; }
+        .nav-item { cursor: pointer; padding: 0.5rem 1rem; border-radius: 0.375rem; transition: background-color 0.3s; }
+        .nav-item:hover, .nav-item.active { background-color: #e6bf83; color: #5d4037; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 300px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 350px; } }
+        .tab-button { background-color: #f0e6d2; border: 1px solid #d4c0a1; }
+        .tab-button.active { background-color: #b8860b; color: white; }
+        .cause-category > div:first-child { cursor: pointer; font-weight: bold; }
+        .cause-details { display: none; margin-left: 20px; }
+    </style>
+</head>
+<body class="bg-beige text-brown-dark">
+
+    <header class="bg-cream shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-center">         
+              
+            <div class="text-center sm:text-left mb-4 sm:mb-0">
+                <h1 class="text-3xl font-bold text-brown-dark">Delícias da Palha</h1>
+                <p class="text-sm text-brown-medium">Planejamento Estratégico Interativo</p>
+            </div>
+            <div>
+                <img src="./img/logo.png" alt="Logotipo Delícias da Palha" class="h-12 w-12 sm:h-16 sm:w-16 rounded-full object-contain">
+            </div>
+            <nav id="mainNav" class="flex flex-wrap justify-center sm:justify-end space-x-2">
+                <button data-target="intro" class="nav-item active">Introdução</button>
+                <button data-target="pdca" class="nav-item">PDCA</button>
+                <button data-target="brainstorming" class="nav-item">Brainstorming</button>
+                <button data-target="gut" class="nav-item">Matriz GUT</button>
+                <button data-target="causaefeito" class="nav-item">Causa e Efeito</button>
+                <button data-target="5w2h" class="nav-item">5W2H</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <section id="intro" class="content-section active">
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4 text-brown-dark border-b-2 border-brown-light pb-2">Bem-vindo ao Planejamento Estratégico da Delícias da Palha</h2>
+                <p class="mb-4 text-gray-700">Esta aplicação interativa apresenta o planejamento estratégico da Delícias da Palha, uma indústria alimentícia brasileira de pequeno porte, localizada no Triângulo Mineiro, Minas Gerais. Fundada em 2007, a empresa destaca-se na produção de batatas processadas do tipo palha. O principal desafio abordado é a baixa taxa de utilização da capacidade instalada, atualmente em 46%. Explore as seções para entender as análises e planos de ação propostos.</p>
+
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-accent-gold-light p-4 rounded-md shadow">
+                        <h3 class="text-xl font-semibold text-brown-dark mb-2">Missão</h3>
+                        <p class="text-gray-700">Produzir batata palha de alta qualidade, valorizando os sabores regionais e promovendo satisfação aos clientes, com responsabilidade social e ambiental.</p>
+                    </div>
+                    <div class="bg-accent-gold-light p-4 rounded-md shadow">
+                        <h3 class="text-xl font-semibold text-brown-dark mb-2">Visão</h3>
+                        <p class="text-gray-700">Ser reconhecida como referência em batata palha no Triângulo Mineiro, ampliando a participação no mercado regional até 2030.</p>
+                    </div>
+                </div>
+                <div class="bg-accent-gold-light p-4 rounded-md shadow mb-6">
+                    <h3 class="text-xl font-semibold text-brown-dark mb-2">Valores</h3>
+                    <ul class="list-disc list-inside text-gray-700 space-y-1">
+                        <li>Qualidade e sabor</li>
+                        <li>Ética e transparência</li>
+                        <li>Valorização dos colaboradores</li>
+                        <li>Respeito ao meio ambiente</li>
+                        <li>Inovação e melhoria contínua</li>
+                    </ul>
+                </div>
+                 <div class="bg-accent-gold-light p-4 rounded-md shadow">
+                    <h3 class="text-xl font-semibold text-brown-dark mb-2">Propósito</h3>
+                    <p class="text-gray-700">Levar sabor e praticidade à mesa dos consumidores, promovendo o desenvolvimento local e a sustentabilidade.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="pdca" class="content-section">
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4 text-brown-dark border-b-2 border-brown-light pb-2">Ciclo PDCA (Plan-Do-Check-Act)</h2>
+                <p class="mb-6 text-gray-700">O Ciclo PDCA é uma metodologia de gestão iterativa de quatro passos utilizada para o controle e melhoria contínua de processos e produtos. Veja como foi aplicado para aumentar a taxa de utilização da capacidade instalada de 46% para 70% em 12 meses.</p>
+                <div id="pdcaTabs" class="mb-4 flex space-x-1 rounded-lg bg-cream p-1">
+                    <button data-tab="plan" class="tab-button flex-1 text-brown-medium py-2 px-4 rounded-md focus:outline-none active">Planejar (Plan)</button>
+                    <button data-tab="do" class="tab-button flex-1 text-brown-medium py-2 px-4 rounded-md focus:outline-none">Executar (Do)</button>
+                    <button data-tab="check" class="tab-button flex-1 text-brown-medium py-2 px-4 rounded-md focus:outline-none">Checar (Check)</button>
+                    <button data-tab="act" class="tab-button flex-1 text-brown-medium py-2 px-4 rounded-md focus:outline-none">Agir (Act)</button>
+                </div>
+                <div id="planContent" class="pdca-tab-content p-4 bg-accent-gold-light rounded-md">
+                    <h3 class="text-xl font-semibold text-brown-dark mb-2">Planejar (Plan)</h3>
+                    <p class="text-gray-700 mb-1"><strong>Problema Identificado:</strong> A taxa de utilização da capacidade instalada está em apenas 46%.</p>
+                    <p class="text-gray-700 mb-1"><strong>Objetivo:</strong> Elevar a taxa de utilização da capacidade instalada de 46% para 70% em 12 meses.</p>
+                    <p class="text-gray-700 mb-1"><strong>Análise das Causas:</strong></p>
+                    <ul class="list-disc list-inside ml-4 text-gray-700">
+                        <li>Variação na qualidade e disponibilidade da matéria-prima (batata).</li>
+                        <li>Possível limitação de demanda.</li>
+                        <li>Possíveis gargalos no processo produtivo ou logística.</li>
+                    </ul>
+                    <p class="text-gray-700 mt-2 mb-1"><strong>Ações Planejadas:</strong></p>
+                    <ul class="list-disc list-inside ml-4 text-gray-700">
+                        <li>Buscar fornecedores alternativos para garantir regularidade e qualidade da batata.</li>
+                        <li>Investir em campanhas de marketing para aumentar a demanda.</li>
+                        <li>Revisar e otimizar processos internos para identificar e eliminar gargalos.</li>
+                        <li>Treinar a equipe para maior produtividade e eficiência.</li>
+                    </ul>
+                </div>
+                <div id="doContent" class="pdca-tab-content p-4 bg-accent-gold-light rounded-md" style="display: none;">
+                    <h3 class="text-xl font-semibold text-brown-dark mb-2">Executar (Do)</h3>
+                    <ul class="list-disc list-inside text-gray-700">
+                        <li>Firmar contratos com novos fornecedores e negociar padrões mínimos de qualidade.</li>
+                        <li>Lançar promoções e ampliar a divulgação dos produtos, principalmente das embalagens menores para novos mercados.</li>
+                        <li>Implementar melhorias sugeridas no fluxo de produção (layout, equipamentos, rotinas).</li>
+                        <li>Realizar treinamentos periódicos com os colaboradores da produção.</li>
+                    </ul>
+                </div>
+                <div id="checkContent" class="pdca-tab-content p-4 bg-accent-gold-light rounded-md" style="display: none;">
+                    <h3 class="text-xl font-semibold text-brown-dark mb-2">Checar (Check)</h3>
+                    <ul class="list-disc list-inside text-gray-700">
+                        <li>Monitorar mensalmente a taxa de utilização da capacidade instalada.</li>
+                        <li>Avaliar a qualidade da matéria-prima recebida e os índices de rendimento do processo (manter ou melhorar o rendimento de 3,5:1).</li>
+                        <li>Medir o aumento nas vendas após as ações de marketing.</li>
+                        <li>Coletar feedback dos funcionários sobre as mudanças implementadas no processo.</li>
+                    </ul>
+                </div>
+                <div id="actContent" class="pdca-tab-content p-4 bg-accent-gold-light rounded-md" style="display: none;">
+                    <h3 class="text-xl font-semibold text-brown-dark mb-2">Agir (Act)</h3>
+                    <p class="text-gray-700 mb-2"><strong>Se as metas forem atingidas (ex: utilização ≥ 70%):</strong> padronizar os novos processos e manter os fornecedores que atenderam aos requisitos.</p>
+                    <p class="text-gray-700"><strong>Caso as metas não sejam atingidas, reavaliar as causas:</strong></p>
+                    <ul class="list-disc list-inside ml-4 text-gray-700">
+                        <li>Ajustar estratégias de marketing.</li>
+                        <li>Buscar novos parceiros comerciais.</li>
+                        <li>Rever processos internos e identificar novas oportunidades de melhoria.</li>
+                    </ul>
+                    <p class="text-gray-700 mt-2">Documentar as lições aprendidas e iniciar novo ciclo PDCA para outros pontos de melhoria, como rendimento do processo ou expansão do portfólio.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="brainstorming" class="content-section">
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4 text-brown-dark border-b-2 border-brown-light pb-2">Brainstorming para Aumentar a Utilização da Capacidade</h2>
+                <p class="mb-6 text-gray-700">O brainstorming é uma técnica de geração de ideias em grupo para encontrar soluções criativas. Abaixo estão as ideias geradas para aumentar a taxa de utilização da capacidade instalada da Delícias da Palha, atualmente em 46%.</p>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-accent-gold-light p-3 rounded-md shadow"><strong class="text-brown-medium">1. Otimização do Layout da Fábrica:</strong> Reorganizar o espaço físico para reduzir deslocamentos e melhorar o fluxo de produção.</div>
+                    <div class="bg-accent-gold-light p-3 rounded-md shadow"><strong class="text-brown-medium">2. Diversificação de Fornecedores:</strong> Buscar novos fornecedores de batata para garantir regularidade e qualidade.</div>
+                    <div class="bg-accent-gold-light p-3 rounded-md shadow"><strong class="text-brown-medium">3. Padronização e Melhoria de Processos:</strong> Padronizar procedimentos para reduzir perdas e aumentar o rendimento.</div>
+                    <div class="bg-accent-gold-light p-3 rounded-md shadow"><strong class="text-brown-medium">4. Treinamento e Ampliação da Equipe:</strong> Realizar treinamentos e contratar temporários em picos de demanda.</div>
+                    <div class="bg-accent-gold-light p-3 rounded-md shadow"><strong class="text-brown-medium">5. Investimento em Marketing e Vendas:</strong> Lançar campanhas promocionais e explorar novos canais de venda.</div>
+                    <div class="bg-accent-gold-light p-3 rounded-md shadow"><strong class="text-brown-medium">6. Automação e Modernização:</strong> Investir em equipamentos automatizados para etapas críticas.</div>
+                    <div class="bg-accent-gold-light p-3 rounded-md shadow"><strong class="text-brown-medium">7. Análise de Gargalos e Tempos de Processo:</strong> Realizar estudos de tempos para identificar etapas lentas.</div>
+                    <div class="bg-accent-gold-light p-3 rounded-md shadow"><strong class="text-brown-medium">8. Redução de Perdas e Otimização do Rendimento:</strong> Desenvolver métodos para aproveitar melhor a matéria-prima.</div>
+                    <div class="bg-accent-gold-light p-3 rounded-md shadow"><strong class="text-brown-medium">9. Novos Produtos e Embalagens:</strong> Desenvolver novos sabores ou formatos de batata palha.</div>
+                    <div class="bg-accent-gold-light p-3 rounded-md shadow"><strong class="text-brown-medium">10. Parcerias Estratégicas:</strong> Firmar parcerias com restaurantes e distribuidores.</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="gut" class="content-section">
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4 text-brown-dark border-b-2 border-brown-light pb-2">Matriz GUT (Gravidade, Urgência, Tendência)</h2>
+                <p class="mb-6 text-gray-700">A Matriz GUT é uma ferramenta para priorizar problemas com base na sua Gravidade, Urgência e Tendência. Cada critério recebe uma nota de 1 a 5, e o produto dessas notas (Score) indica a prioridade.</p>
+                <div class="overflow-x-auto mb-6">
+                    <table class="min-w-full bg-accent-gold-light border border-brown-light">
+                        <thead>
+                            <tr class="bg-brown-medium text-white">
+                                <th class="py-2 px-4 border-b border-brown-light text-left">Problema</th>
+                                <th class="py-2 px-4 border-b border-brown-light text-center">Gravidade (G)</th>
+                                <th class="py-2 px-4 border-b border-brown-light text-center">Urgência (U)</th>
+                                <th class="py-2 px-4 border-b border-brown-light text-center">Tendência (T)</th>
+                                <th class="py-2 px-4 border-b border-brown-light text-center">Score (GxUxT)</th>
+                                <th class="py-2 px-4 border-b border-brown-light text-center">Prioridade</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-700">
+                            <tr>
+                                <td class="py-2 px-4 border-b border-brown-light">Baixa utilização da capacidade</td>
+                                <td class="py-2 px-4 border-b border-brown-light text-center">5</td>
+                                <td class="py-2 px-4 border-b border-brown-light text-center">4</td>
+                                <td class="py-2 px-4 border-b border-brown-light text-center">5</td>
+                                <td class="py-2 px-4 border-b border-brown-light text-center">100</td>
+                                <td class="py-2 px-4 border-b border-brown-light text-center">1</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b border-brown-light">Variação na qualidade da matéria-prima</td>
+                                <td class="py-2 px-4 border-b border-brown-light text-center">4</td>
+                                <td class="py-2 px-4 border-b border-brown-light text-center">5</td>
+                                <td class="py-2 px-4 border-b border-brown-light text-center">5</td>
+                                <td class="py-2 px-4 border-b border-brown-light text-center">100</td>
+                                <td class="py-2 px-4 border-b border-brown-light text-center">1</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b border-brown-light">Dependência de poucos fornecedores</td>
+                                <td class="py-2 px-4 border-b border-brown-light text-center">4</td>
+                                <td class="py-2 px-4 border-b border-brown-light text-center">4</td>
+                                <td class="py-2 px-4 border-b border-brown-light text-center">4</td>
+                                <td class="py-2 px-4 border-b border-brown-light text-center">64</td>
+                                <td class="py-2 px-4 border-b border-brown-light text-center">3</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b border-brown-light">Perdas elevadas no rendimento</td>
+                                <td class="py-2 px-4 border-b border-brown-light text-center">3</td>
+                                <td class="py-2 px-4 border-b border-brown-light text-center">3</td>
+                                <td class="py-2 px-4 border-b border-brown-light text-center">4</td>
+                                <td class="py-2 px-4 border-b border-brown-light text-center">36</td>
+                                <td class="py-2 px-4 border-b border-brown-light text-center">4</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-4 border-b border-brown-light">Equipe reduzida para produção</td>
+                                <td class="py-2 px-4 border-b border-brown-light text-center">3</td>
+                                <td class="py-2 px-4 border-b border-brown-light text-center">3</td>
+                                <td class="py-2 px-4 border-b border-brown-light text-center">3</td>
+                                <td class="py-2 px-4 border-b border-brown-light text-center">27</td>
+                                <td class="py-2 px-4 border-b border-brown-light text-center">5</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="chart-container mb-6">
+                    <canvas id="gutChart"></canvas>
+                </div>
+                <h3 class="text-xl font-semibold text-brown-dark mb-2">Interpretação</h3>
+                <p class="text-gray-700">A "Baixa utilização da capacidade instalada" e a "Variação na qualidade da matéria-prima" são os problemas mais críticos (Score 100) e devem ser priorizados. A "Dependência de poucos fornecedores" (Score 64) também requer atenção. A Matriz GUT direciona os esforços para os fatores de maior impacto e risco.</p>
+            </div>
+        </section>
+
+        <section id="causaefeito" class="content-section">
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4 text-brown-dark border-b-2 border-brown-light pb-2">Diagrama de Causa e Efeito (Ishikawa)</h2>
+                <p class="mb-6 text-gray-700">O Diagrama de Causa e Efeito (ou Espinha de Peixe) ajuda a identificar e organizar as possíveis causas de um problema específico. O problema central aqui é a "Baixa utilização da capacidade instalada (46%)". As causas são agrupadas nas categorias dos 6Ms.</p>
+                <div class="space-y-4">
+                    <div class="cause-category p-3 bg-accent-gold-light rounded-md shadow">
+                        <div class="flex justify-between items-center"><span>Matéria-prima ▼</span></div>
+                        <ul class="cause-details list-disc list-inside text-gray-700 mt-2">
+                            <li>Variação na qualidade das batatas recebidas</li>
+                            <li>Fornecimento irregular das variedades Asterix, Marquis e Cupido</li>
+                            <li>Perdas elevadas no processamento devido à baixa qualidade</li>
+                        </ul>
+                    </div>
+                    <div class="cause-category p-3 bg-accent-gold-light rounded-md shadow">
+                        <div class="flex justify-between items-center"><span>Mão de obra ▼</span></div>
+                        <ul class="cause-details list-disc list-inside text-gray-700 mt-2">
+                            <li>Equipe reduzida para o volume potencial de produção</li>
+                            <li>Falta de treinamento específico para maximizar eficiência</li>
+                            <li>Possível desmotivação ou rotatividade</li>
+                        </ul>
+                    </div>
+                    <div class="cause-category p-3 bg-accent-gold-light rounded-md shadow">
+                        <div class="flex justify-between items-center"><span>Máquinas ▼</span></div>
+                        <ul class="cause-details list-disc list-inside text-gray-700 mt-2">
+                            <li>Equipamentos subutilizados ou com manutenção inadequada</li>
+                            <li>Falhas técnicas ou paradas frequentes</li>
+                            <li>Layout da fábrica não otimizado para o fluxo produtivo</li>
+                        </ul>
+                    </div>
+                    <div class="cause-category p-3 bg-accent-gold-light rounded-md shadow">
+                        <div class="flex justify-between items-center"><span>Métodos (Processos) ▼</span></div>
+                        <ul class="cause-details list-disc list-inside text-gray-700 mt-2">
+                            <li>Processos pouco padronizados ou ineficientes</li>
+                            <li>Falta de controle de qualidade durante a produção</li>
+                            <li>Ausência de melhoria contínua e revisão de processos</li>
+                        </ul>
+                    </div>
+                     <div class="cause-category p-3 bg-accent-gold-light rounded-md shadow">
+                        <div class="flex justify-between items-center"><span>Meio ambiente ▼</span></div>
+                        <ul class="cause-details list-disc list-inside text-gray-700 mt-2">
+                            <li>Espaço físico limitado (300 m²)</li>
+                            <li>Condições ambientais (temperatura, limpeza, iluminação) que impactam produtividade</li>
+                            <li>Logística de recebimento e expedição pouco eficiente</li>
+                        </ul>
+                    </div>
+                    <div class="cause-category p-3 bg-accent-gold-light rounded-md shadow">
+                        <div class="flex justify-between items-center"><span>Medição ▼</span></div>
+                        <ul class="cause-details list-disc list-inside text-gray-700 mt-2">
+                            <li>Falta de indicadores claros de desempenho</li>
+                            <li>Erros na medição de rendimento do processo</li>
+                            <li>Ausência de monitoramento contínuo dos resultados</li>
+                        </ul>
+                    </div>
+                </div>
+                 <p class="mt-6 text-gray-700">Clique em cada categoria para expandir e ver as causas detalhadas. Esta estrutura ajuda a visualizar os fatores que limitam a capacidade produtiva.</p>
+            </div>
+        </section>
+
+        <section id="5w2h" class="content-section">
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4 text-brown-dark border-b-2 border-brown-light pb-2">Plano de Ação 5W2H</h2>
+                <p class="mb-6 text-gray-700">A ferramenta 5W2H detalha um plano de ação respondendo a sete perguntas essenciais para solucionar um problema ou alcançar uma meta. Aqui, o objetivo é elevar a taxa de utilização da capacidade instalada de 46% para 70%.</p>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-accent-gold-light border border-brown-light">
+                        <thead class="bg-brown-medium text-white">
+                            <tr>
+                                <th class="py-2 px-4 border-b border-brown-light text-left">Pergunta</th>
+                                <th class="py-2 px-4 border-b border-brown-light text-left">Resposta</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-700">
+                            <tr><td class="py-2 px-4 border-b border-brown-light font-semibold">What (O quê?)</td><td class="py-2 px-4 border-b border-brown-light">Elevar a taxa de utilização da capacidade instalada de 46% para 70%.</td></tr>
+                            <tr><td class="py-2 px-4 border-b border-brown-light font-semibold">Why (Por quê?)</td><td class="py-2 px-4 border-b border-brown-light">Para melhorar a eficiência produtiva, reduzir custos fixos por unidade e aumentar a lucratividade da empresa.</td></tr>
+                            <tr><td class="py-2 px-4 border-b border-brown-light font-semibold">Where (Onde?)</td><td class="py-2 px-4 border-b border-brown-light">Na fábrica da Delícias da Palha, localizada no Triângulo Mineiro, Minas Gerais.</td></tr>
+                            <tr><td class="py-2 px-4 border-b border-brown-light font-semibold">When (Quando?)</td><td class="py-2 px-4 border-b border-brown-light">No prazo de 12 meses, iniciando imediatamente após aprovação do plano de ação.</td></tr>
+                            <tr><td class="py-2 px-4 border-b border-brown-light font-semibold">Who (Quem?)</td><td class="py-2 px-4 border-b border-brown-light">Diretor geral, administrador de processos produtivos e equipe de produção.</td></tr>
+                            <tr><td class="py-2 px-4 border-b border-brown-light font-semibold">How (Como?)</td><td class="py-2 px-4 border-b border-brown-light">Buscar novos fornecedores para garantir regularidade e qualidade da batata; Investir em ações de marketing para aumentar a demanda; Otimizar processos internos de produção e logística; Realizar treinamentos para equipe.</td></tr>
+                            <tr><td class="py-2 px-4 border-b border-brown-light font-semibold">How much (Quanto?)</td><td class="py-2 px-4 border-b border-brown-light">Estimativa inicial de R$ 25.000,00 para ações de marketing, melhorias operacionais e treinamentos.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                 <p class="mt-6 text-gray-700">O 5W2H facilita a organização, o acompanhamento e a execução do plano, tornando o objetivo alcançável e monitorável.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-cream text-brown-medium text-center p-4 mt-8 shadow-inner">
+        <p>&copy; Junho/2025 - Rejane Verônica Oliveira Silva</p>
+        <p>Curso Superior de Tecnologia em Gestão de Recursos Humanos - FATEC Baixada Santista "Rubens Lara"</p>
+        <p>Disciplina: Planejamento Estratégico em Recursos Humanos - Prof. Marcelo dos Santos Rocha</p>
+    </footer>
+
+    <script>
+        const navItems = document.querySelectorAll('.nav-item');
+        const contentSections = document.querySelectorAll('.content-section');
+        const pdcaTabButtons = document.querySelectorAll('#pdcaTabs .tab-button');
+        const pdcaTabContents = document.querySelectorAll('.pdca-tab-content');
+        const causeCategories = document.querySelectorAll('.cause-category');
+
+        function setActiveSection(targetId) {
+            navItems.forEach(item => {
+                item.classList.toggle('active', item.dataset.target === targetId);
+            });
+            contentSections.forEach(section => {
+                section.classList.toggle('active', section.id === targetId);
+            });
+            window.scrollTo(0, 0);
+        }
+
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                setActiveSection(item.dataset.target);
+            });
+        });
+
+        pdcaTabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                pdcaTabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                const targetTab = button.dataset.tab + "Content";
+                pdcaTabContents.forEach(content => {
+                    content.style.display = content.id === targetTab ? 'block' : 'none';
+                });
+            });
+        });
+
+        causeCategories.forEach(category => {
+            const header = category.querySelector('div:first-child');
+            const details = category.querySelector('.cause-details');
+            const icon = header.querySelector('span');
+
+            header.addEventListener('click', () => {
+                const isVisible = details.style.display === 'block';
+                details.style.display = isVisible ? 'none' : 'block';
+                icon.textContent = icon.textContent.includes('▼') ? icon.textContent.replace('▼','▲') : icon.textContent.replace('▲','▼');
+            });
+        });
+        
+        const gutData = {
+            labels: [
+                'Baixa utilização da capacidade', 
+                'Variação na qualidade da matéria-prima', 
+                'Dependência de poucos fornecedores', 
+                'Perdas elevadas no rendimento', 
+                'Equipe reduzida para produção'
+            ],
+            datasets: [{
+                label: 'Score GUT (GxUxT)',
+                data: [100, 100, 64, 36, 27],
+                backgroundColor: [
+                    'rgba(184, 134, 11, 0.7)', // darkgoldenrod
+                    'rgba(184, 134, 11, 0.7)',
+                    'rgba(210, 180, 140, 0.7)', // tan
+                    'rgba(205, 133, 63, 0.7)', // peru
+                    'rgba(160, 82, 45, 0.7)'    // sienna
+                ],
+                borderColor: [
+                    'rgba(184, 134, 11, 1)',
+                    'rgba(184, 134, 11, 1)',
+                    'rgba(210, 180, 140, 1)',
+                    'rgba(205, 133, 63, 1)',
+                    'rgba(160, 82, 45, 1)'
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        const gutChartCtx = document.getElementById('gutChart').getContext('2d');
+        new Chart(gutChartCtx, {
+            type: 'bar',
+            data: gutData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Score (GxUxT)' }
+                    },
+                    x: {
+                        ticks: {
+                            callback: function(value, index, values) {
+                                const label = this.getLabelForValue(value);
+                                if (label.length > 16) {
+                                    return label.substring(0, 16) + '...';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                return gutData.labels[tooltipItems[0].dataIndex];
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        setActiveSection('intro'); // Set initial active section
+    </script>
+</body>
+</html>
